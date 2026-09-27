@@ -1,0 +1,32 @@
+--- a/tools/voice_client_config.py	2026-09-15 17:30:07.042423345 +0000
++++ b/tools/voice_client_config.py	2026-09-15 17:30:31.357431869 +0000
+@@ -215,4 +215,29 @@
+         except Exception:
+             logger.exception("client voice-config %s resolution failed", key.upper())
+             out[key] = _relay("resolution error")
++    # Desktop VAD tuning (see apps/desktop use-voice-conversation.ts): the
++    # desktop chat loop previously hardcoded silenceLevel 0.075 / silenceMs
++    # 1250 / idle 12000 and ignored voice.silence_* config. Expose the
++    # profile's values so the client can honor config; clients that do not
++    # read the field are unaffected (additive key, same trust boundary as the
++    # stt/tts sections above).
++    try:
++        from hermes_cli.config import load_config
++
++        voice_cfg = load_config().get("voice") or {}
++        if not isinstance(voice_cfg, dict):
++            voice_cfg = {}
++        raw_threshold = voice_cfg.get("silence_threshold", 200)
++        raw_duration = voice_cfg.get("silence_duration", 3.0)
++        out["voice"] = {
++            "silence_threshold": int(raw_threshold)
++            if isinstance(raw_threshold, (int, float))
++            else 200,
++            "silence_duration": float(raw_duration)
++            if isinstance(raw_duration, (int, float))
++            else 3.0,
++        }
++    except Exception:
++        logger.exception("client voice-config voice section resolution failed")
++        out["voice"] = {"silence_threshold": 200, "silence_duration": 3.0}
+     return out

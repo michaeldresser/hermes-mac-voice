@@ -1,0 +1,537 @@
+[
+    {
+        "Id": "88e854f771e17b5b6d7d36aecfa9acc3c0ce192d1d24de830be427110eb1b76f",
+        "Created": "2026-09-14T23:00:21.91506193Z",
+        "Path": "uvicorn",
+        "Args": [
+            "--factory",
+            "speaches.main:create_app"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 62450,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-09-15T01:23:06.840962627Z",
+            "FinishedAt": "2026-09-15T01:23:06.63651746Z",
+            "Health": {
+                "Status": "healthy",
+                "FailingStreak": 0,
+                "Log": [
+                    {
+                        "Start": "2026-09-26T20:45:41.325529545Z",
+                        "End": "2026-09-26T20:45:41.372168837Z",
+                        "ExitCode": 0,
+                        "Output": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100     2  100     2    0     0   1796      0 --:--:-- --:--:-- --:--:--  2000\nOK"
+                    },
+                    {
+                        "Start": "2026-09-26T20:46:11.375923379Z",
+                        "End": "2026-09-26T20:46:11.459211712Z",
+                        "ExitCode": 0,
+                        "Output": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0OK\r100     2  100     2    0     0    251      0 --:--:-- --:--:-- --:--:--   285\n"
+                    },
+                    {
+                        "Start": "2026-09-26T20:46:41.464496587Z",
+                        "End": "2026-09-26T20:46:41.513631587Z",
+                        "ExitCode": 0,
+                        "Output": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0OK\r100     2  100     2    0     0   1782      0 --:--:-- --:--:-- --:--:--  2000\n"
+                    },
+                    {
+                        "Start": "2026-09-26T20:47:11.517317129Z",
+                        "End": "2026-09-26T20:47:11.567499046Z",
+                        "ExitCode": 0,
+                        "Output": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100     2  100     2    0     0   1282      0 --:--:-- --:--:-- --:--:--  2000\nOK"
+                    },
+                    {
+                        "Start": "2026-09-26T20:47:41.568650004Z",
+                        "End": "2026-09-26T20:47:41.611262962Z",
+                        "ExitCode": 0,
+                        "Output": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100     2  100     2    0     0   1996      0 --:--:-- --:--:-- --:--:--  2000\nOK"
+                    }
+                ]
+            }
+        },
+        "Image": "sha256:21e3df06d842fb7802ab470dd77c25f0e8c0d22950e8d8c6ae886e851af53ef8",
+        "ResolvConfPath": "/var/lib/docker/containers/88e854f771e17b5b6d7d36aecfa9acc3c0ce192d1d24de830be427110eb1b76f/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/88e854f771e17b5b6d7d36aecfa9acc3c0ce192d1d24de830be427110eb1b76f/hostname",
+        "HostsPath": "/var/lib/docker/containers/88e854f771e17b5b6d7d36aecfa9acc3c0ce192d1d24de830be427110eb1b76f/hosts",
+        "LogPath": "/var/lib/docker/containers/88e854f771e17b5b6d7d36aecfa9acc3c0ce192d1d24de830be427110eb1b76f/88e854f771e17b5b6d7d36aecfa9acc3c0ce192d1d24de830be427110eb1b76f-json.log",
+        "Name": "/speaches",
+        "RestartCount": 2,
+        "Driver": "overlayfs",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": [
+                "speaches_hf-hub-cache:/home/ubuntu/.cache/huggingface/hub:rw"
+            ],
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "speaches_default",
+            "PortBindings": {
+                "8000/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "8000"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "unless-stopped",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": null,
+            "DnsOptions": null,
+            "DnsSearch": null,
+            "ExtraHosts": [],
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": null,
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": null,
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "Storage": {
+            "RootFS": {
+                "Snapshot": {
+                    "Name": "overlayfs"
+                }
+            }
+        },
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "speaches_hf-hub-cache",
+                "Source": "/var/lib/docker/volumes/speaches_hf-hub-cache/_data",
+                "Destination": "/home/ubuntu/.cache/huggingface/hub",
+                "Driver": "local",
+                "Mode": "rw",
+                "RW": true,
+                "Propagation": ""
+            }
+        ],
+        "Config": {
+            "Hostname": "88e854f771e1",
+            "Domainname": "",
+            "User": "ubuntu",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "ExposedPorts": {
+                "8000/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/home/ubuntu/speaches/.venv/bin:/home/ubuntu/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "HOME=/home/ubuntu",
+                "UVICORN_HOST=0.0.0.0",
+                "UVICORN_PORT=8000",
+                "HF_HUB_ENABLE_HF_TRANSFER=0",
+                "DO_NOT_TRACK=1",
+                "GRADIO_ANALYTICS_ENABLED=False",
+                "DISABLE_TELEMETRY=1",
+                "HF_HUB_DISABLE_TELEMETRY=1"
+            ],
+            "Cmd": [
+                "uvicorn",
+                "--factory",
+                "speaches.main:create_app"
+            ],
+            "Healthcheck": {
+                "Test": [
+                    "CMD",
+                    "curl",
+                    "--fail",
+                    "http://0.0.0.0:8000/health"
+                ],
+                "Interval": 30000000000,
+                "Timeout": 10000000000,
+                "StartPeriod": 5000000000,
+                "Retries": 3
+            },
+            "Image": "ghcr.io/speaches-ai/speaches:latest-cpu",
+            "Volumes": null,
+            "WorkingDir": "/home/ubuntu/speaches",
+            "Entrypoint": null,
+            "Labels": {
+                "com.docker.compose.config-hash": "a0c14e649f9469f5925c16f4d8bb7b86ff6a8b54b619dbf7d8742daab79bbafc",
+                "com.docker.compose.container-number": "1",
+                "com.docker.compose.depends_on": "",
+                "com.docker.compose.image": "sha256:21e3df06d842fb7802ab470dd77c25f0e8c0d22950e8d8c6ae886e851af53ef8",
+                "com.docker.compose.oneoff": "False",
+                "com.docker.compose.project": "speaches",
+                "com.docker.compose.project.config_files": "/Users/michael/Documents/Code/speaches/compose.cpu.yaml",
+                "com.docker.compose.project.working_dir": "/Users/michael/Documents/Code/speaches",
+                "com.docker.compose.service": "speaches",
+                "com.docker.compose.version": "5.0.2",
+                "org.opencontainers.image.licenses": "MIT",
+                "org.opencontainers.image.ref.name": "ubuntu",
+                "org.opencontainers.image.source": "https://github.com/speaches-ai/speaches",
+                "org.opencontainers.image.version": "24.04"
+            },
+            "StopTimeout": 1
+        },
+        "NetworkSettings": {
+            "SandboxID": "24a8d5f22b648325158663a58f292b315e20214956f1d22875f54174f57da0e7",
+            "SandboxKey": "/var/run/docker/netns/24a8d5f22b64",
+            "Ports": {
+                "8000/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "8000"
+                    },
+                    {
+                        "HostIp": "::",
+                        "HostPort": "8000"
+                    }
+                ]
+            },
+            "Networks": {
+                "speaches_default": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": [
+                        "speaches",
+                        "speaches"
+                    ],
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "bb3ca38d13fa788276e213ca736baa9ab91be8971c0cca737e2f141a1abd2e89",
+                    "EndpointID": "1bf6386d07cd94045c79409f7903876dbb844e7a7ff0026a5cd20d39402a236f",
+                    "Gateway": "172.19.0.1",
+                    "IPAddress": "172.19.0.2",
+                    "MacAddress": "f2:ec:8d:3c:61:49",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": [
+                        "speaches",
+                        "88e854f771e1"
+                    ]
+                }
+            }
+        },
+        "ImageManifestDescriptor": {
+            "mediaType": "application/vnd.oci.image.manifest.v1+json",
+            "digest": "sha256:2fedebb4b4dccd37ab8f233374ae32bd5b11ee96e8033d2a0a230b9cd052e409",
+            "size": 2008,
+            "platform": {
+                "architecture": "arm64",
+                "os": "linux"
+            }
+        }
+    },
+    {
+        "Id": "34a056669cfcc7b764d776c3c16028ce674f93a08310cb09bcdaae2dd52e56df",
+        "Created": "2026-09-14T22:59:57.75702196Z",
+        "Path": "./entrypoint.sh",
+        "Args": [],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 55615,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-09-14T22:59:58.327165293Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:ee3111d6a2c903ed62f3b4fa19543c6901205ed39fce3c177e895b34a8386b9c",
+        "ResolvConfPath": "/var/lib/docker/containers/34a056669cfcc7b764d776c3c16028ce674f93a08310cb09bcdaae2dd52e56df/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/34a056669cfcc7b764d776c3c16028ce674f93a08310cb09bcdaae2dd52e56df/hostname",
+        "HostsPath": "/var/lib/docker/containers/34a056669cfcc7b764d776c3c16028ce674f93a08310cb09bcdaae2dd52e56df/hosts",
+        "LogPath": "/var/lib/docker/containers/34a056669cfcc7b764d776c3c16028ce674f93a08310cb09bcdaae2dd52e56df/34a056669cfcc7b764d776c3c16028ce674f93a08310cb09bcdaae2dd52e56df-json.log",
+        "Name": "/kokoro-tts",
+        "RestartCount": 0,
+        "Driver": "overlayfs",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "bridge",
+            "PortBindings": {
+                "8880/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "8880"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "unless-stopped",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                94,
+                213
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": null,
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": [],
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "Storage": {
+            "RootFS": {
+                "Snapshot": {
+                    "Name": "overlayfs"
+                }
+            }
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "34a056669cfc",
+            "Domainname": "",
+            "User": "appuser",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "8880/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/app/.venv/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG=C.UTF-8",
+                "GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305",
+                "PYTHON_VERSION=3.12.14",
+                "PYTHON_SHA256=5c8462af5790baf43a321a1559dbe0db06d1be4300fb85fb53c40060668e548a",
+                "PYTHONUNBUFFERED=1",
+                "PYTHONPATH=/app:/app/api",
+                "USE_GPU=false",
+                "PHONEMIZER_ESPEAK_PATH=/usr/bin",
+                "PHONEMIZER_ESPEAK_DATA=/usr/share/espeak-ng-data",
+                "ESPEAK_DATA_PATH=/usr/share/espeak-ng-data",
+                "DEVICE=cpu"
+            ],
+            "Cmd": [
+                "./entrypoint.sh"
+            ],
+            "Image": "ghcr.io/remsky/kokoro-fastapi-cpu:latest",
+            "Volumes": null,
+            "WorkingDir": "/app",
+            "Entrypoint": null,
+            "Labels": {
+                "org.opencontainers.image.created": "2026-09-10T04:36:27Z",
+                "org.opencontainers.image.description": "Kokoro TTS served via FastAPI. CPU build.",
+                "org.opencontainers.image.licenses": "Apache-2.0",
+                "org.opencontainers.image.revision": "404d122e847569012bd6a6afe36f1c3a5e1c66b7",
+                "org.opencontainers.image.source": "https://github.com/remsky/Kokoro-FastAPI",
+                "org.opencontainers.image.title": "Kokoro-FastAPI (CPU)",
+                "org.opencontainers.image.url": "https://github.com/remsky/Kokoro-FastAPI",
+                "org.opencontainers.image.version": "v0.9.0"
+            },
+            "StopTimeout": 1
+        },
+        "NetworkSettings": {
+            "SandboxID": "f773c9b7017cf63ad6a7abbc6cd610a786f2f6bb1198d3902091111272cf75f9",
+            "SandboxKey": "/var/run/docker/netns/f773c9b7017c",
+            "Ports": {
+                "8880/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "8880"
+                    },
+                    {
+                        "HostIp": "::",
+                        "HostPort": "8880"
+                    }
+                ]
+            },
+            "Networks": {
+                "bridge": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "fe161b43cc13fab61ac22f92693d6916297c72b2dedc40f73f851cf80174056c",
+                    "EndpointID": "9da9753140bcc3f922440c2fb507395d4b2f7d11ea6199ebaf73647ea3d525b7",
+                    "Gateway": "172.17.0.1",
+                    "IPAddress": "172.17.0.2",
+                    "MacAddress": "2a:ba:4d:e3:d6:c8",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        },
+        "ImageManifestDescriptor": {
+            "mediaType": "application/vnd.oci.image.manifest.v1+json",
+            "digest": "sha256:73940a712af75ff5f2558e5aafe71624b03bbd64c9dc60061794ae468969cc20",
+            "size": 3934,
+            "platform": {
+                "architecture": "arm64",
+                "os": "linux"
+            }
+        }
+    }
+]

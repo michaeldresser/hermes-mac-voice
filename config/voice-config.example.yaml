@@ -1,0 +1,81 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Hermes voice/STT/TTS config surface for the Mac local-first stack.
+#
+# Copy the relevant blocks into the serving profile's config.yaml
+# (on this deployment: /hermes-home/config.yaml on the cluster gateway).
+# These are the LIVE values, verified 2026-09-26.
+#
+# Tuning does NOT require a rebuild:
+#   - voice.silence_*        -> dashboard -> Settings -> Voice
+#   - voice.stream_*         -> `hermes config set` (not in the dashboard schema)
+#   - tts.speed / voice      -> config file, then restart the gateway
+# The DESKTOP caches voice config per session: Cmd+Q the app to pick up changes.
+#
+# No real credentials belong in this file. `api_key: local` is a placeholder that
+# the Mac services ignore; the engine addresses are LAN DNS names.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Text-to-speech ───────────────────────────────────────────────────────────
+# Stock `openai` provider, pointed at Speaches on the Mac. Speaches speaks the
+# OpenAI /v1/audio/speech contract, so no plugin or custom provider is needed —
+# only a base_url. This is the whole trick that keeps TTS on the Mac.
+tts:
+  provider: openai
+  openai:
+    model: speaches-ai/Kokoro-82M-v1.0-ONNX   # Kokoro, served by Speaches
+    voice: af_heart                            # warm US-English female
+    base_url: http://michaelacstudio.darknet:8000/v1
+    api_key: local                             # ignored placeholder
+    speed: 1.2
+
+# ── Speech-to-text ───────────────────────────────────────────────────────────
+# faster-whisper via Speaches. NOTE: with a REMOTE profile, `provider: local`
+# means local TO THE GATEWAY HOST, not to the desktop — which is why the engine
+# is addressed by DNS rather than run in-process on the Mac's desktop app.
+# (The Mac's own local gateway config uses: stt.enabled: true, stt.language: en,
+#  stt.local.model: base. The desktop's audio path is governed by the blocks
+#  below, which is the one that routes to the Mac services.)
+stt:
+  enabled: true
+  language: en
+  local:
+    model: base
+
+# ── Voice conversation loop ──────────────────────────────────────────────────
+voice:
+  # chained  = STT -> agent brain -> TTS (sentence-by-sentence)
+  # gpt-live = full-duplex conversational loop against voice.gpt_live.base_url
+  voice_chat_mode: gpt-live
+
+  # The local live endpoint. THIS IS THE LOCAL-FIRST SWITCH:
+  # point it at the Mac bridge (:8899) and the whole duplex loop stays on the Mac.
+  # If base_url is MISSING, Hermes falls back to https://api.openai.com/v1 and
+  # posts the SDP offer to the cloud with a placeholder key -> 401
+  # {"code":"missing_authorization"}. That error shape is OpenAI's, not the
+  # bridge's. Never let this key go missing.
+  gpt_live:
+    model: local-live
+    voice: af_heart
+    base_url: http://michaelacstudio.darknet:8899/v1
+    api_key: local
+
+  max_recording_seconds: 600
+  auto_tts: true
+
+  # Force the RELAY path: audio is processed by the Mac services through the
+  # gateway, never by a cloud provider called directly from the desktop.
+  client_direct: false
+
+  beep_enabled: true
+
+  # ── Turn-taking (honoured by the CLI/TUI natively; requires desktop patch 0002)
+  silence_threshold: 120      # mic sensitivity, int16 RMS. lower = quieter counts
+                              # mapping: level = clamp(0.02, 0.3, threshold/32767*12.5)
+                              #   200 -> ~0.076 (stock default)   120 -> ~0.046
+  silence_duration: 8         # seconds of quiet before the turn submits
+                              # mapping: silenceMs = duration*1000,
+                              #          idleSilenceMs = max(silenceMs, 12000)
+
+  # ── Streaming transcription (requires desktop patch 0003)
+  stream_transcribe: true     # master switch; false = exact stock behavior
+  stream_segment_seconds: 2   # segment length while speaking, clamped 1-6

@@ -1,0 +1,425 @@
+--- a/apps/desktop/src/app/chat/composer/hooks/use-mic-recorder.ts
++++ b/apps/desktop/src/app/chat/composer/hooks/use-mic-recorder.ts
+@@ -31,6 +31,10 @@
+   start: (options?: MicRecorderOptions) => Promise<void>
+   stop: () => Promise<MicRecording | null>
+   cancel: () => void
++  /** Close the segment captured so far and immediately begin the next one on
++   *  the same microphone stream. Lets the caller transcribe while the user is
++   *  still speaking instead of waiting for end-of-speech. */
++  rotate: () => Promise<MicRecording | null>
+ }
+ 
+ /** Recorder + live-start mic failures → the same friendly copy: a DOMException
+@@ -85,6 +89,9 @@
+   const silenceTriggeredRef = useRef(false)
+   const silenceStartedAtRef = useRef<number | null>(null)
+   const stopResolverRef = useRef<((recording: MicRecording | null) => void) | null>(null)
++  const segmentStartedAtRef = useRef(0)
++  const mimeTypeRef = useRef('')
++  const optionsRef = useRef<MicRecorderOptions>({})
+ 
+   const cleanup = () => {
+     if (animationRef.current) {
+@@ -174,6 +181,50 @@
+     }
+   }
+ 
++  /** End-of-recording handlers for whichever MediaRecorder is current. Rotation
++   *  swaps instances; the final stop resolves through whichever one is live. */
++  const attachFinalHandlers = (target: MediaRecorder, fallbackMime: string) => {
++    target.ondataavailable = event => {
++      if (event.data.size > 0) {
++        chunksRef.current.push(event.data)
++      }
++    }
++
++    target.onstop = () => {
++      const chunks = chunksRef.current
++      const recordingType = target.mimeType || fallbackMime || 'audio/webm'
++      const durationMs = Date.now() - segmentStartedAtRef.current
++      const heardSpeech = heardSpeechRef.current
++
++      chunksRef.current = []
++      cleanup()
++
++      const resolver = stopResolverRef.current
++      stopResolverRef.current = null
++
++      if (!chunks.length) {
++        resolver?.(null)
++
++        return
++      }
++
++      resolver?.({
++        audio: new Blob(chunks, { type: recordingType }),
++        durationMs,
++        heardSpeech
++      })
++    }
++
++    target.onerror = event => {
++      const error = micError((event as Event & { error?: unknown }).error, copy)
++      const resolver = stopResolverRef.current
++      stopResolverRef.current = null
++      cleanup()
++      optionsRef.current.onError?.(error)
++      resolver?.(null)
++    }
++  }
++
+   const start: MicRecorderHandle['start'] = async (options = {}) => {
+     if (recorderRef.current) {
+       return
+@@ -220,51 +271,73 @@
+     silenceTriggeredRef.current = false
+     silenceStartedAtRef.current = null
+     startedAtRef.current = Date.now()
++    segmentStartedAtRef.current = startedAtRef.current
++    mimeTypeRef.current = recorder.mimeType || mimeType || 'audio/webm'
++    optionsRef.current = options
+ 
+-    recorder.ondataavailable = event => {
+-      if (event.data.size > 0) {
+-        chunksRef.current.push(event.data)
++    attachFinalHandlers(recorder, mimeType)
++
++    recorder.start()
++    setRecording(true)
++    startMeter(stream, options)
++  }
++
++  const rotate: MicRecorderHandle['rotate'] = () =>
++    new Promise<MicRecording | null>(resolve => {
++      const recorder = recorderRef.current
++      const stream = streamRef.current
++
++      if (!recorder || !stream || recorder.state === 'inactive') {
++        resolve(null)
++
++        return
+       }
+-    }
+ 
+-    recorder.onstop = () => {
+-      const chunks = chunksRef.current
+-      const recordingType = recorder.mimeType || mimeType || 'audio/webm'
+-      const durationMs = Date.now() - startedAtRef.current
++      // The closing segment owns the chunks collected so far; the next recorder
++      // gets a fresh buffer so the two never interleave.
++      const segmentChunks = chunksRef.current
++      const type = recorder.mimeType || mimeTypeRef.current || 'audio/webm'
++      const durationMs = Date.now() - segmentStartedAtRef.current
+       const heardSpeech = heardSpeechRef.current
+ 
+-      chunksRef.current = []
+-      cleanup()
++      recorder.ondataavailable = event => {
++        if (event.data.size > 0) {
++          segmentChunks.push(event.data)
++        }
++      }
+ 
+-      const resolver = stopResolverRef.current
+-      stopResolverRef.current = null
++      recorder.onerror = () => resolve(null)
+ 
+-      if (!chunks.length) {
+-        resolver?.(null)
++      recorder.onstop = () => {
++        if (!segmentChunks.length) {
++          resolve(null)
+ 
+-        return
+-      }
++          return
++        }
+ 
+-      resolver?.({
+-        audio: new Blob(chunks, { type: recordingType }),
+-        durationMs,
+-        heardSpeech
+-      })
+-    }
++        resolve({ audio: new Blob(segmentChunks, { type }), durationMs, heardSpeech })
++      }
+ 
+-    recorder.onerror = event => {
+-      const error = micError((event as Event & { error?: unknown }).error, copy)
+-      const resolver = stopResolverRef.current
+-      stopResolverRef.current = null
+-      cleanup()
+-      options.onError?.(error)
+-      resolver?.(null)
+-    }
++      try {
++        recorder.stop()
++      } catch {
++        resolve(null)
++      }
+ 
+-    recorder.start()
+-    setRecording(true)
+-    startMeter(stream, options)
+-  }
++      // Keep capturing on the same stream: the microphone is never released
++      // while a finished segment is being transcribed.
++      try {
++        const next = new MediaRecorder(stream, type ? { mimeType: type } : undefined)
++
++        chunksRef.current = []
++        segmentStartedAtRef.current = Date.now()
++        attachFinalHandlers(next, type)
++        recorderRef.current = next
++        next.start()
++      } catch {
++        recorderRef.current = null
++      }
++    })
+ 
+   const stop: MicRecorderHandle['stop'] = () =>
+     new Promise<MicRecording | null>(resolve => {
+@@ -297,7 +370,7 @@
+     resolver?.(null)
+   }
+ 
+-  const handle: MicRecorderHandle = { start, stop, cancel }
++  const handle: MicRecorderHandle = { start, stop, cancel, rotate }
+ 
+   return { handle, level, recording }
+ }
+--- a/apps/desktop/src/app/chat/composer/hooks/use-voice-conversation.ts
++++ b/apps/desktop/src/app/chat/composer/hooks/use-voice-conversation.ts
+@@ -46,6 +46,51 @@
+  *  the captured utterance anyway. */
+ const INTERRUPT_SETTLE_TIMEOUT_MS = 5_000
+ 
++/**
++ * Join a streamed transcript with the freshly transcribed tail. Whisper tends to
++ * repeat the words straddling a hard segment boundary; strip the longest
++ * matching overlap so the seam doesn't duplicate them.
++ */
++function joinTranscript(streamed: string, tail: string): string {
++  const head = streamed.trim()
++  const next = tail.trim()
++
++  if (!head) {
++    return next
++  }
++
++  if (!next) {
++    return head
++  }
++
++  // Word-level first: a segment boundary lands mid-sentence, so Whisper
++  // repeats the last word (or few) of the previous segment. Short words like
++  // "is" matter here, which a character-length threshold would miss.
++  const headWords = head.split(/\s+/)
++  const nextWords = next.split(/\s+/)
++  const maxWords = Math.min(4, headWords.length, nextWords.length)
++
++  for (let size = maxWords; size >= 1; size--) {
++    const tailWords = headWords.slice(-size).join(' ').toLowerCase()
++    const leadWords = nextWords.slice(0, size).join(' ').toLowerCase()
++
++    if (tailWords === leadWords) {
++      return `${head} ${nextWords.slice(size).join(' ')}`.trim()
++    }
++  }
++
++  // Character-level: a single word split across the boundary ("checkpo" + "int").
++  const max = Math.min(40, head.length, next.length)
++
++  for (let size = max; size >= 4; size--) {
++    if (head.slice(-size).toLowerCase() === next.slice(0, size).toLowerCase()) {
++      return `${head}${next.slice(size)}`.trim()
++    }
++  }
++
++  return `${head} ${next}`.trim()
++}
++
+ export function useVoiceConversation({
+   busy,
+   enabled,
+@@ -81,6 +126,14 @@
+   const wasEnabledRef = useRef(enabled)
+   const onStopWordRef = useRef(onStopWord)
+   const onInterruptRef = useRef(onInterrupt)
++  // Streaming capture state (see transcribeSegment): blobs and their cached
++  // transcripts, in capture order.
++  const segmentBlobsRef = useRef<Blob[]>([])
++  const segmentTextsRef = useRef<(null | string)[]>([])
++  const segmentTimerRef = useRef<number | null>(null)
++  const segmentBusyRef = useRef(false)
++  const streamEnabledRef = useRef(true)
++  const streamSegmentMsRef = useRef(2_000)
+ 
+   // eslint-disable-next-line no-restricted-syntax -- legitimate non-atom ref write (see eslint rule comment)
+   useEffect(() => {
+@@ -136,6 +189,56 @@
+     spokenSourceLengthRef.current = 0
+   }
+ 
++  /** Streaming capture: while the user speaks, close and transcribe a segment
++   *  every `voice.stream_segment_seconds` so the text is already cached when
++   *  they pause — transcription never waits for end-of-speech. The microphone
++   *  stays open across rotations. */
++  const stopSegmentTimer = useCallback(() => {
++    if (segmentTimerRef.current !== null) {
++      window.clearInterval(segmentTimerRef.current)
++      segmentTimerRef.current = null
++    }
++  }, [])
++
++  const transcribeSegment = useCallback(async () => {
++    if (!streamEnabledRef.current || segmentBusyRef.current || !onTranscribeAudio) {
++      return
++    }
++
++    segmentBusyRef.current = true
++
++    try {
++      const segment = await handle.rotate()
++
++      if (!segment || !segment.audio.size) {
++        return
++      }
++
++      const index = segmentBlobsRef.current.length
++
++      segmentBlobsRef.current.push(segment.audio)
++      segmentTextsRef.current.push(null)
++
++      const text = (await onTranscribeAudio(segment.audio)).trim()
++
++      segmentTextsRef.current[index] = text
++    } catch {
++      // Keep the blob cached: handleTurn retries any transcript still missing.
++    } finally {
++      segmentBusyRef.current = false
++    }
++  }, [handle, onTranscribeAudio])
++
++  const startSegmentTimer = useCallback(() => {
++    stopSegmentTimer()
++
++    if (!streamEnabledRef.current) {
++      return
++    }
++
++    segmentTimerRef.current = window.setInterval(() => void transcribeSegment(), streamSegmentMsRef.current)
++  }, [stopSegmentTimer, transcribeSegment])
++
+   const handleTurn = useCallback(
+     async (forceTranscribe = false) => {
+       if (turnClosingRef.current) {
+@@ -144,6 +247,7 @@
+ 
+       turnClosingRef.current = true
+       clearTurnTimeout()
++      stopSegmentTimer()
+       setStatus('transcribing')
+ 
+       try {
+@@ -160,7 +264,33 @@
+         }
+ 
+         try {
+-          const transcript = (await onTranscribeAudio(result.audio)).trim()
++          // Segments captured while the user spoke were transcribed as they
++          // closed, so only the final tail needs work now. Any transcript still
++          // missing (in flight, or failed earlier) is retried here so no audio
++          // is dropped.
++          const segmentParts: string[] = []
++
++          for (let index = 0; index < segmentBlobsRef.current.length; index++) {
++            let text = segmentTextsRef.current[index] ?? null
++
++            if (text === null) {
++              try {
++                text = (await onTranscribeAudio(segmentBlobsRef.current[index])).trim()
++              } catch {
++                text = ''
++              }
++
++              segmentTextsRef.current[index] = text
++            }
++
++            if (text) {
++              segmentParts.push(text)
++            }
++          }
++
++          const tail = (await onTranscribeAudio(result.audio)).trim()
++          const streamed = segmentParts.join(' ').trim()
++          const transcript = streamed ? joinTranscript(streamed, tail) : tail
+ 
+           if (!transcript) {
+             if (enabledRef.current) {
+@@ -201,7 +331,7 @@
+         turnClosingRef.current = false
+       }
+     },
+-    [handle, onSubmit, onTranscribeAudio, voiceCopy.transcriptionFailed]
++    [handle, onSubmit, onTranscribeAudio, stopSegmentTimer, voiceCopy.transcriptionFailed]
+   )
+ 
+   const startListening = useCallback(async () => {
+@@ -243,7 +373,14 @@
+       let idleSilenceMs = 12_000
+       try {
+         const config = await getHermesConfig()
+-        const voice = (config as { voice?: { silence_threshold?: number; silence_duration?: number } }).voice
++        const voice = (config as {
++          voice?: {
++            silence_threshold?: number
++            silence_duration?: number
++            stream_segment_seconds?: number
++            stream_transcribe?: boolean
++          }
++        }).voice
+         if (voice && typeof voice.silence_duration === 'number' && voice.silence_duration > 0) {
+           silenceMs = voice.silence_duration * 1_000
+           idleSilenceMs = Math.max(silenceMs, 12_000)
+@@ -254,6 +391,12 @@
+           // to ~0.076 float; scale linearly and clamp to the meter's sane band.
+           silenceLevel = Math.min(0.3, Math.max(0.02, (voice.silence_threshold / 32767) * 12.5))
+         }
++        // Streaming capture is on by default; `voice.stream_transcribe: false`
++        // restores the single-shot (transcribe-after-end-of-speech) behavior.
++        streamEnabledRef.current = voice?.stream_transcribe !== false
++        const segmentSeconds =
++          typeof voice?.stream_segment_seconds === 'number' ? voice.stream_segment_seconds : 2
++        streamSegmentMsRef.current = Math.min(6_000, Math.max(1_000, segmentSeconds * 1_000))
+       } catch {
+         // Config unavailable: keep the historical defaults.
+       }
+@@ -269,6 +412,9 @@
+         onSilence: () => void handleTurn()
+       })
+       setStatus('listening')
++      segmentBlobsRef.current = []
++      segmentTextsRef.current = []
++      startSegmentTimer()
+       // Clear any prior turn-timeout before arming a fresh one. Each listen
+       // cycle reassigns turnTimeoutRef; without clearing first, a stale 60s
+       // timer from an earlier cycle survives and later fires handleTurn() in
+@@ -625,6 +771,7 @@
+   const end = useCallback(async () => {
+     pendingStartRef.current = false
+     clearTurnTimeout()
++    stopSegmentTimer()
+     stopVoicePlayback()
+     handle.cancel()
+     turnClosingRef.current = false
+@@ -633,7 +780,7 @@
+     consumePendingResponse()
+     setMuted(false)
+     setStatus('idle')
+-  }, [consumePendingResponse, handle])
++  }, [consumePendingResponse, handle, stopSegmentTimer])
+ 
+   const stopTurn = useCallback(() => {
+     if (statusRef.current === 'listening') {

@@ -1,0 +1,172 @@
+{
+  "host": "arm64",
+  "ort": "1.23.2",
+  "rows": [
+    {
+      "model": "int8 (cpu file, 8.7MB)",
+      "config": "CPU 1 thread",
+      "session_build_ms": 44.2,
+      "output_shape": [
+        1,
+        1
+      ],
+      "min": 32.99,
+      "median": 33.59,
+      "p90": 34.16,
+      "max": 34.8,
+      "total_decision_ms": 34.61,
+      "rss_mb": 110.8,
+      "n": 60
+    },
+    {
+      "model": "int8 (cpu file, 8.7MB)",
+      "config": "CPU 2 threads",
+      "session_build_ms": 23.1,
+      "output_shape": [
+        1,
+        1
+      ],
+      "min": 18.75,
+      "median": 19.46,
+      "p90": 19.9,
+      "max": 21.05,
+      "total_decision_ms": 20.48,
+      "rss_mb": 153.4,
+      "n": 60
+    },
+    {
+      "model": "int8 (cpu file, 8.7MB)",
+      "config": "CPU 4 threads",
+      "session_build_ms": 22.5,
+      "output_shape": [
+        1,
+        1
+      ],
+      "min": 12.01,
+      "median": 12.62,
+      "p90": 12.76,
+      "max": 12.93,
+      "total_decision_ms": 13.64,
+      "rss_mb": 158.2,
+      "n": 60
+    },
+    {
+      "model": "int8 (cpu file, 8.7MB)",
+      "config": "CPU 8 threads",
+      "session_build_ms": 22.5,
+      "output_shape": [
+        1,
+        1
+      ],
+      "min": 8.89,
+      "median": 9.31,
+      "p90": 9.44,
+      "max": 9.62,
+      "total_decision_ms": 10.33,
+      "rss_mb": 172.5,
+      "n": 60
+    },
+    {
+      "model": "int8 (cpu file, 8.7MB)",
+      "config": "CoreML (GPU+ANE)",
+      "session_build_ms": 1512.7,
+      "output_shape": [
+        1,
+        1
+      ],
+      "min": 31.75,
+      "median": 34.72,
+      "p90": 38.2,
+      "max": 41.04,
+      "total_decision_ms": 35.74,
+      "rss_mb": 420.3,
+      "n": 60
+    },
+    {
+      "model": "fp32 (gpu file, 32.4MB)",
+      "config": "CPU 1 thread",
+      "session_build_ms": 153.4,
+      "output_shape": [
+        1,
+        1
+      ],
+      "min": 73.34,
+      "median": 74.74,
+      "p90": 75.73,
+      "max": 76.71,
+      "total_decision_ms": 75.76,
+      "rss_mb": 452.1,
+      "n": 60
+    },
+    {
+      "model": "fp32 (gpu file, 32.4MB)",
+      "config": "CPU 2 threads",
+      "session_build_ms": 19.8,
+      "output_shape": [
+        1,
+        1
+      ],
+      "min": 39.39,
+      "median": 40.4,
+      "p90": 40.84,
+      "max": 41.62,
+      "total_decision_ms": 41.42,
+      "rss_mb": 452.1,
+      "n": 60
+    },
+    {
+      "model": "fp32 (gpu file, 32.4MB)",
+      "config": "CPU 4 threads",
+      "session_build_ms": 20.2,
+      "output_shape": [
+        1,
+        1
+      ],
+      "min": 22.97,
+      "median": 23.49,
+      "p90": 24.23,
+      "max": 24.69,
+      "total_decision_ms": 24.51,
+      "rss_mb": 452.1,
+      "n": 60
+    },
+    {
+      "model": "fp32 (gpu file, 32.4MB)",
+      "config": "CPU 8 threads",
+      "session_build_ms": 20.7,
+      "output_shape": [
+        1,
+        1
+      ],
+      "min": 14.45,
+      "median": 14.7,
+      "p90": 14.97,
+      "max": 15.74,
+      "total_decision_ms": 15.72,
+      "rss_mb": 452.1,
+      "n": 60
+    },
+    {
+      "model": "fp32 (gpu file, 32.4MB)",
+      "config": "CoreML (GPU+ANE)",
+      "session_build_ms": 1355.9,
+      "output_shape": [
+        1,
+        1
+      ],
+      "min": 37.51,
+      "median": 43.7,
+      "p90": 53.59,
+      "max": 63.88,
+      "total_decision_ms": 44.72,
+      "rss_mb": 484.0,
+      "n": 60
+    }
+  ],
+  "mel_frontend_ms": {
+    "min": 0.92,
+    "median": 1.02,
+    "p90": 1.2,
+    "max": 1.28
+  }
+}

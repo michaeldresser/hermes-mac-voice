@@ -1,0 +1,48 @@
+--- a/apps/desktop/src/app/chat/composer/hooks/use-voice-conversation.ts	2026-09-15 18:06:49.505840684 +0000
++++ b/apps/desktop/src/app/chat/composer/hooks/use-voice-conversation.ts	2026-09-15 18:06:49.550840669 +0000
+@@ -11,6 +11,7 @@
+   stopVoicePlayback
+ } from '@/lib/voice-playback'
+ import { isVoiceStopCommand } from '@/lib/voice-stop-word'
++import { getHermesConfig } from '@/api/config'
+ import { notify, notifyError } from '@/store/notifications'
+ import { $voicePlayback } from '@/store/voice-playback'
+ 
+@@ -233,11 +234,33 @@
+     }
+ 
+     try {
+-      // VAD tuning mirrors `tools.voice_mode` defaults so the browser loop matches the CLI.
++      // VAD tuning: honor the profile's `voice.silence_*` config (same keys the
++      // CLI/TUI loops use, served by GET /api/config), falling back to the
++      // historical browser-loop defaults when the gateway does not return them
++      // (older gateways, fetch failure, missing keys).
++      let silenceLevel = 0.075
++      let silenceMs = 1_250
++      let idleSilenceMs = 12_000
++      try {
++        const config = await getHermesConfig()
++        const voice = (config as { voice?: { silence_threshold?: number; silence_duration?: number } }).voice
++        if (voice && typeof voice.silence_duration === 'number' && voice.silence_duration > 0) {
++          silenceMs = voice.silence_duration * 1_000
++          idleSilenceMs = Math.max(silenceMs, 12_000)
++        }
++        if (voice && typeof voice.silence_threshold === 'number' && voice.silence_threshold > 0) {
++          // Config RMS is int16 scale (0-32767); the browser meter uses float
++          // RMS x128 normalized to 0-1 (see use-mic-recorder). 200 int16 maps
++          // to ~0.076 float; scale linearly and clamp to the meter's sane band.
++          silenceLevel = Math.min(0.3, Math.max(0.02, (voice.silence_threshold / 32767) * 12.5))
++        }
++      } catch {
++        // Config unavailable: keep the historical defaults.
++      }
+       await handle.start({
+-        silenceLevel: 0.075,
+-        silenceMs: 1_250,
+-        idleSilenceMs: 12_000,
++        silenceLevel,
++        silenceMs,
++        idleSilenceMs,
+         onError: error => {
+           notifyError(error, voiceCopy.microphoneFailed)
+           pendingStartRef.current = false
